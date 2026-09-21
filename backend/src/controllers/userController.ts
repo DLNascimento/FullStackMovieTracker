@@ -1,7 +1,9 @@
-import { type Request, type Response } from "express";
+import { type Request, type Response, type NextFunction } from "express";
 import { createUserService } from "../services/userService.js"
 
-export async function createUserController(req: Request, res: Response){
+export async function createUserController(req: Request, res: Response, next: NextFunction){
+    
+    try {
     const { name, email, password} = req.body;
 
     const user = await createUserService(name, email, password);
@@ -12,4 +14,8 @@ export async function createUserController(req: Request, res: Response){
         email: user.email,
         createdAt: user.createdAt
     });
+    } catch (error) {
+        next(error);
+    }
+    
 }
