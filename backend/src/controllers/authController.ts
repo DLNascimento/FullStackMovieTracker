@@ -31,3 +31,12 @@ export async function loginController(req: Request, res: Response, next: NextFun
     }
 
 }
+
+export function logoutController(req: Request, res: Response) {
+    
+    res.clearCookie("token");
+
+    res.status(200).json({
+        message: "Logout successful"
+    });
+}
