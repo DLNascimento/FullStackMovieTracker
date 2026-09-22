@@ -3,6 +3,7 @@ import  express  from "express";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import testRoutes from "./routes/testRoutes.js";
+import movieRoutes from "./routes/movieRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/test", testRoutes);
+app.use("/movies", movieRoutes);
 
 app.use(errorHandler);
 
