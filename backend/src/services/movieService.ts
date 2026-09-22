@@ -17,3 +17,16 @@ export async function createMovie(userId: number, data: createMovieDTO){
     });
     return movie;
 }
+
+export async function getMoviesByUser(userId: number) {
+    const movies = await prisma.movieEntry.findMany({
+        where: {
+            userId
+        },
+        orderBy: {
+            createdAt: "desc"
+        }
+    });
+
+    return movies;
+}
