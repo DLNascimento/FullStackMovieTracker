@@ -14,3 +14,19 @@ export async function createUserService(name: string, email: string, password: s
     });
     return user;
 }
+
+export async function getUsersService() {
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            createdAt: true
+        },
+        orderBy: {
+            createdAt: "desc"
+        }
+    });
+
+    return users;
+}
