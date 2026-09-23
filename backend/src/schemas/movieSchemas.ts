@@ -10,3 +10,11 @@ export const createMovieSchema = z.object({
 });
 
 export type createMovieDTO = z.infer<typeof createMovieSchema>
+
+export const updateMovieSchema = z.object({
+    status: z.enum(["WANT_TO_WATCH", "WATCHED"]).optional(),
+    rating: z.number().min(0).max(10).optional(),
+    comment: z.string().optional()
+});
+
+export type UpdateMovieDTO = z.infer<typeof updateMovieSchema>;

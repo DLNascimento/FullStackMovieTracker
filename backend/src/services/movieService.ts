@@ -1,5 +1,6 @@
+import { error } from "node:console";
 import {prisma} from "../lib/prisma.js";
-import { type createMovieDTO } from "../schemas/movieSchemas.js";
+import { type createMovieDTO, type UpdateMovieDTO, type updateMovieSchema } from "../schemas/movieSchemas.js";
 
 export async function createMovie(userId: number, data: createMovieDTO){
 
@@ -29,4 +30,21 @@ export async function getMoviesByUser(userId: number) {
     });
 
     return movies;
+}
+
+export async function updateMovieService(userId: number, movieEntryId: number, data: UpdateMovieDTO){
+
+    const movie = await prisma.movieEntry.findFirst({
+        where: {id: movieEntryId, userId}
+    });
+
+    if(!movie){
+        throw new Error("Movie not found");
+    }
+
+    return prisma.movieEntry.update({
+        where: { id: movieEntryId },
+        data
+    });
+
 }
