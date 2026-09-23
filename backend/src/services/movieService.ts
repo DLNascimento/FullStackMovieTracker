@@ -48,3 +48,21 @@ export async function updateMovieService(userId: number, movieEntryId: number, d
     });
 
 }
+
+export async function deleteMovieService(userId: number, movieEntryId: number){
+
+    const movie = await prisma.movieEntry.findFirst({
+        where:{
+            id: movieEntryId,
+            userId
+        }
+    });
+
+    if(!movie){
+        throw new Error("Movie not found!");
+    }
+
+    await prisma.movieEntry.delete({
+        where: {id: movieEntryId}
+    });
+}

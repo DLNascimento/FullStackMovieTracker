@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { createMovie, getMoviesByUser, updateMovieService } from "../services/movieService.js";
+import { createMovie, getMoviesByUser, updateMovieService, deleteMovieService } from "../services/movieService.js";
 
 export async function createMovieController(req: Request, res: Response, next: NextFunction) {
 
@@ -65,6 +65,30 @@ export async function updateMovieController(req: Request, res: Response, next: N
         const movie = await updateMovieService(userId!, movieEntryId, req.body);
 
         return res.status(200).json(movie);
+
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+export async function deleteMovieController(req: Request, res: Response, next: NextFunction){
+
+    try {
+        const movieEntryId = Number(req.params.id);
+        const userId = req.user?.userId;
+
+        if(!userId){
+            res.status(401).json({message: "Authentication required"});
+        }
+
+        if(Number.isNaN(movieEntryId)){
+            res.status(400).json({message: "Invalid movie id"});
+        }
+
+        await deleteMovieService(userId!, movieEntryId);
+
+        return res.status(204).send();
 
     } catch (error) {
         next(error);
