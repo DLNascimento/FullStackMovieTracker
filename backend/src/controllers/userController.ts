@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { createUserService, getUsersService } from "../services/userService.js"
+import { createUserService, getUsersService, deleteUserService } from "../services/userService.js"
 
 export async function createUserController(req: Request, res: Response, next: NextFunction){
     
@@ -32,4 +32,26 @@ export async function getUsersController(
     } catch (error) {
         next(error);
     }
+}
+
+export async function deleteUserController(req: Request, res: Response, next: NextFunction){
+
+    try {
+        const userId = req.user?.userId;
+
+        if(!userId){
+            return res.status(401).json({
+                message: "Authentication required"
+            });
+        }
+        await deleteUserService(userId);
+
+        res.clearCookie("token");
+
+        return res.status(204).send();
+
+    } catch (error) {
+        next(error);
+    }
+
 }

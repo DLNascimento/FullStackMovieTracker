@@ -30,3 +30,19 @@ export async function getUsersService() {
 
     return users;
 }
+
+export async function deleteUserService(userId: number){
+
+    const user = await prisma.user.findUnique({
+        where: {id: userId}
+    });
+
+    if(!userId){
+        throw new Error("User not found");
+    }
+
+    await prisma.user.delete({
+        where: {id: userId}
+    });
+
+}
