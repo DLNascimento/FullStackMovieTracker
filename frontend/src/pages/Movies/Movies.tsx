@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 
 import SearchBar from "../../components/SearchBar/SearchBar";
 import MovieList from "../../components/MovieList/MovieList";
+import MyMovieList from "../../components/MyMovieList/MyMovieList";
+
 import {
     createMovie,
+    deleteMovie,
     getMovies,
-    searchMovies
+    searchMovies,
+    updateMovie
 } from "../../services/movieService";
+
 import type {
     MovieEntry,
+    MovieStatus,
     TmdbMovie
 } from "../../types/movie";
 
@@ -54,6 +60,8 @@ function Movies() {
 
     async function handleAddMovie(movie: TmdbMovie) {
         try {
+            setError("");
+
             await createMovie({
                 movieId: movie.id,
                 title: movie.title,
@@ -67,6 +75,45 @@ function Movies() {
                 error instanceof Error
                     ? error.message
                     : "Failed to add movie."
+            );
+        }
+    }
+
+    async function handleUpdateMovie(
+        id: number,
+        data: {
+            status?: MovieStatus;
+            rating?: number;
+            comment?: string;
+        }
+    ) {
+        try {
+            setError("");
+
+            await updateMovie(id, data);
+
+            await loadMyMovies();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to update movie."
+            );
+        }
+    }
+
+    async function handleDeleteMovie(id: number) {
+        try {
+            setError("");
+
+            await deleteMovie(id);
+
+            await loadMyMovies();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to delete movie."
             );
         }
     }
@@ -93,26 +140,12 @@ function Movies() {
 
             {loadingList ? (
                 <p>Loading your movies...</p>
-            ) : myMovies.length === 0 ? (
-                <p>You have no movies yet.</p>
             ) : (
-                <div>
-                    {myMovies.map((movie) => (
-                        <article key={movie.id}>
-                            <h3>{movie.title}</h3>
-
-                            <p>Status: {movie.status}</p>
-
-                            {movie.rating !== null && (
-                                <p>Rating: {movie.rating}</p>
-                            )}
-
-                            {movie.comment && (
-                                <p>Comment: {movie.comment}</p>
-                            )}
-                        </article>
-                    ))}
-                </div>
+                <MyMovieList
+                    movies={myMovies}
+                    onUpdate={handleUpdateMovie}
+                    onDelete={handleDeleteMovie}
+                />
             )}
         </main>
     );
