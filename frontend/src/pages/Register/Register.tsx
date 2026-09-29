@@ -38,53 +38,96 @@ function Register() {
     }
 
     return (
-        <main>
-            <h1>Create account</h1>
+        <main className="auth-page">
+            <section className="auth-card">
+                <h1>Movie Tracker</h1>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="name">Name</label>
-                    <input
-                        id="name"
-                        type="text"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        required
-                    />
+                <p className="auth-subtitle">
+                    Create your account to start tracking movies.
+                </p>
+
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
+                >
+                    <div className="form-field">
+                        <label htmlFor="name">
+                            Name
+                        </label>
+
+                        <input
+                            id="name"
+                            type="text"
+                            value={name}
+                            onChange={(event) =>
+                                setName(event.target.value)
+                            }
+                            required
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label htmlFor="email">
+                            Email
+                        </label>
+
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(event.target.value)
+                            }
+                            required
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label htmlFor="password">
+                            Password
+                        </label>
+
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <p className="error-message">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        className="primary-button"
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Creating..."
+                            : "Create account"}
+                    </button>
+                </form>
+
+                <div className="auth-footer">
+                    <span>
+                        Already have an account?
+                    </span>
+
+                    <button
+                        className="link-button"
+                        onClick={() => navigate("/login")}
+                    >
+                        Back to login
+                    </button>
                 </div>
-
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        required
-                    />
-                </div>
-
-                {error && <p>{error}</p>}
-
-                <button type="submit" disabled={loading}>
-                    {loading ? "Creating..." : "Create account"}
-                </button>
-            </form>
-
-            <button onClick={() => navigate("/login")}>
-                Back to login
-            </button>
+            </section>
         </main>
     );
 }

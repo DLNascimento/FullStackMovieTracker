@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-import type { MovieEntry, MovieStatus } from "../../types/movie";
+import type {
+    MovieEntry,
+    MovieStatus
+} from "../../types/movie";
 
 interface MyMovieListProps {
     movies: MovieEntry[];
@@ -25,7 +28,7 @@ function MyMovieList({
     }
 
     return (
-        <section>
+        <section className="my-movie-list">
             {movies.map((movie) => (
                 <MovieItem
                     key={movie.id}
@@ -56,11 +59,17 @@ function MovieItem({
     onUpdate,
     onDelete
 }: MovieItemProps) {
-    const [status, setStatus] = useState<MovieStatus>(movie.status);
+    const [status, setStatus] = useState<MovieStatus>(
+        movie.status
+    );
+
     const [rating, setRating] = useState(
         movie.rating?.toString() ?? ""
     );
-    const [comment, setComment] = useState(movie.comment ?? "");
+
+    const [comment, setComment] = useState(
+        movie.comment ?? ""
+    );
 
     function handleSave() {
         onUpdate(movie.id, {
@@ -71,15 +80,25 @@ function MovieItem({
     }
 
     return (
-        <article>
+        <article className="my-movie-item">
             <h3>{movie.title}</h3>
+
+            {movie.rating !== null && (
+                <p>Rating: {movie.rating}</p>
+            )}
+
+            {movie.comment && (
+                <p>Comment: {movie.comment}</p>
+            )}
 
             <label>
                 Status:
                 <select
                     value={status}
                     onChange={(event) =>
-                        setStatus(event.target.value as MovieStatus)
+                        setStatus(
+                            event.target.value as MovieStatus
+                        )
                     }
                 >
                     <option value="WANT_TO_WATCH">

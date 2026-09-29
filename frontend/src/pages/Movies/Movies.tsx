@@ -1,45 +1,49 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import SearchBar from "../../components/SearchBar/SearchBar";
 import MovieList from "../../components/MovieList/MovieList";
-import MyMovieList from "../../components/MyMovieList/MyMovieList";
 
 import {
     createMovie,
-    deleteMovie,
-    getMovies,
-    searchMovies,
-    updateMovie
+    getNowPlayingMovies,
+    searchMovies
 } from "../../services/movieService";
 
-import type {
-    MovieEntry,
-    MovieStatus,
-    TmdbMovie
-} from "../../types/movie";
+import { logoutUser } from "../../services/authService";
+
+import type { TmdbMovie } from "../../types/movie";
 
 function Movies() {
+    const navigate = useNavigate();
+
     const [movies, setMovies] = useState<TmdbMovie[]>([]);
-    const [myMovies, setMyMovies] = useState<MovieEntry[]>([]);
     const [loading, setLoading] = useState(false);
-    const [loadingList, setLoadingList] = useState(true);
+    const [loadingNowPlaying, setLoadingNowPlaying] = useState(true);
     const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+    const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
-        loadMyMovies();
+        loadNowPlayingMovies();
     }, []);
 
-    async function loadMyMovies() {
+    async function loadNowPlayingMovies() {
         try {
-            setLoadingList(true);
+            setLoadingNowPlaying(true);
+            setError("");
 
-            const data = await getMovies();
+            const data = await getNowPlayingMovies();
 
-            setMyMovies(data);
+            setMovies(data.results);
         } catch (error) {
-            console.error(error);
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load movies."
+            );
         } finally {
-            setLoadingList(false);
+            setLoadingNowPlaying(false);
         }
     }
 
@@ -47,6 +51,7 @@ function Movies() {
         try {
             setLoading(true);
             setError("");
+            setIsSearching(true);
 
             const data = await searchMovies(query);
 
@@ -69,7 +74,7 @@ function Movies() {
                 status: "WANT_TO_WATCH"
             });
 
-            await loadMyMovies();
+            showMessage("Movie added to your library.");
         } catch (error) {
             setError(
                 error instanceof Error
@@ -79,74 +84,89 @@ function Movies() {
         }
     }
 
-    async function handleUpdateMovie(
-        id: number,
-        data: {
-            status?: MovieStatus;
-            rating?: number;
-            comment?: string;
-        }
-    ) {
-        try {
-            setError("");
+    function showMessage(text: string) {
+        setMessage(text);
 
-            await updateMovie(id, data);
-
-            await loadMyMovies();
-        } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to update movie."
-            );
-        }
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
     }
 
-    async function handleDeleteMovie(id: number) {
+    async function handleLogout() {
         try {
-            setError("");
+            await logoutUser();
 
-            await deleteMovie(id);
-
-            await loadMyMovies();
+            navigate("/login");
         } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to delete movie."
-            );
+            console.error(error);
         }
     }
 
     return (
         <main>
-            <h1>Movie Tracker</h1>
-
-            <SearchBar
-                onSearch={handleSearch}
-                loading={loading}
-            />
-
-            {error && <p>{error}</p>}
-
-            <h2>Search results</h2>
-
-            <MovieList
-                movies={movies}
-                onAdd={handleAddMovie}
-            />
-
-            <h2>My movies</h2>
-
-            {loadingList ? (
-                <p>Loading your movies...</p>
-            ) : (
-                <MyMovieList
-                    movies={myMovies}
-                    onUpdate={handleUpdateMovie}
-                    onDelete={handleDeleteMovie}
-                />
+            {message && (
+                <div className="toast success-toast">
+                    {message}
+                </div>
             )}
+
+            <header className="movies-header">
+                <div>
+                    <h1>Search Movies</h1>
+
+                    <p className="movies-subtitle">
+                        Find movies and add them to your library.
+                    </p>
+                </div>
+
+                <div className="movies-actions">
+                    <button
+                        className="my-movies-button"
+                        onClick={() => navigate("/library")}
+                    >
+                        My Library
+                    </button>
+
+                    <button
+                        className="logout-button"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
+            </header>
+
+            <section className="search-section">
+                <h2>Search movies</h2>
+
+                <SearchBar
+                    onSearch={handleSearch}
+                    loading={loading}
+                />
+            </section>
+
+            {error && (
+                <p className="error-message">
+                    {error}
+                </p>
+            )}
+
+            <section className="search-results-section">
+                <h2>
+                    {isSearching
+                        ? "Search results"
+                        : "Now playing"}
+                </h2>
+
+                {loadingNowPlaying ? (
+                    <p>Loading movies...</p>
+                ) : (
+                    <MovieList
+                        movies={movies}
+                        onAdd={handleAddMovie}
+                    />
+                )}
+            </section>
         </main>
     );
 }

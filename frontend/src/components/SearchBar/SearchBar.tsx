@@ -21,7 +21,10 @@ function SearchBar({ onSearch, loading = false }: SearchBarProps) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form
+            className="search-form"
+            onSubmit={handleSubmit}
+        >
             <input
                 type="text"
                 placeholder="Search for a movie..."

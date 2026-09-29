@@ -1,4 +1,5 @@
 import { apiFetch } from "./api";
+
 import type {
     MovieEntry,
     MovieStatus,
@@ -28,6 +29,10 @@ export async function searchMovies(
     );
 }
 
+export async function getNowPlayingMovies(): Promise<TmdbSearchResponse> {
+    return apiFetch("/movies/now-playing");
+}
+
 export async function getMovies(): Promise<MovieEntry[]> {
     return apiFetch("/movies");
 }
@@ -51,7 +56,9 @@ export async function updateMovie(
     });
 }
 
-export async function deleteMovie(id: number): Promise<void> {
+export async function deleteMovie(
+    id: number
+): Promise<void> {
     await apiFetch(`/movies/${id}`, {
         method: "DELETE"
     });

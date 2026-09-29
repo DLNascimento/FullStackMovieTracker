@@ -8,11 +8,11 @@ interface MovieListProps {
 
 function MovieList({ movies, onAdd }: MovieListProps) {
     if (movies.length === 0) {
-        return <p>No movies found.</p>;
+        return <p className="empty-message">No movies found.</p>;
     }
 
     return (
-        <section>
+        <section className="movie-search-results">
             {movies.map((movie) => (
                 <MovieCard
                     key={movie.id}
